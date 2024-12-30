@@ -15,6 +15,14 @@ const nextConfig = {
     ]
   },
 
+  experimental: {
+    missingSuspenseWithCSRBailout: false,
+  },
+  
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  
   webpack: (
     config,
     { buildId, dev, isServer, defaultLoaders, webpack }

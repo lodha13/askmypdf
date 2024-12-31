@@ -1,34 +1,30 @@
 "use client";
 
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { trpc } from '../_trpc/client';
 import { Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const Page = () => {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [origin, setOrigin] = useState<string | null>(null);
 
   // Extract origin safely without Suspense issues
   useEffect(() => {
-    if (searchParams) {
-      setOrigin(searchParams.get('origin'));
-    }
-  }, [searchParams]);
+    const params = new URLSearchParams(window.location.search);
+    const originParam = params.get('origin');
+    setOrigin(originParam);
+  }, []);
 
   // Destructure query result to access loading, error, and data
   const { data, isLoading, error } = trpc.authCallback.useQuery(undefined, {
     onSuccess: ({ success }) => {
-      console.log('success',success)
       if (success) {
-        console.log('success',success)
         // user is synced to db
         router.push(origin ? `/${origin}` : '/dashboard');
       }
     },
     onError: (err) => {
-      console.log('err',err)
       if (err.data?.code === 'UNAUTHORIZED') {
         router.push('/sign-in');
       }

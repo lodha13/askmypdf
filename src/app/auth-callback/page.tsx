@@ -1,64 +1,46 @@
-"use client";
+"use client"
 
-import { useRouter } from 'next/navigation';
-import { trpc } from '../_trpc/client';
-import { Loader2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation'
+import { trpc } from '../_trpc/client'
+import { Loader2 } from 'lucide-react'
 
 const Page = () => {
-  const router = useRouter();
-  const [origin, setOrigin] = useState<string | null>(null);
+  const router = useRouter()
 
-  // Extract origin safely without Suspense issues
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const originParam = params.get('origin');
-    setOrigin(originParam);
-  }, []);
+  const searchParams = useSearchParams()
+  const origin = searchParams.get('origin')
 
-  // Destructure query result to access loading, error, and data
-  const { data, isLoading, error } = trpc.authCallback.useQuery(undefined, {
-    onSuccess: ({ success }) => {
-      if (success) {
-        // user is synced to db
-        router.push(origin ? `/${origin}` : '/dashboard');
-      }
-    },
-    onError: (err) => {
-      if (err.data?.code === 'UNAUTHORIZED') {
-        router.push('/sign-in');
-      }
-    },
-    retry: true,
-    retryDelay: 500,
-  });
-
-  // Loading UI
-  if (isLoading) {
-    return (
-      <div className="w-full mt-24 flex justify-center">
-        <div className="flex flex-col items-center gap-2">
-          <Loader2 className="h-8 w-8 animate-spin text-zinc-800" />
-          <h3 className="font-semibold text-xl">Setting up your account...</h3>
-          <p>You will be redirected automatically.</p>
-        </div>
-      </div>
-    );
+  trpc.authCallback.useQuery(
+      undefined,
+    {
+      refetchInterval: (data) => {
+        console.log(data)
+        if (data) {
+          // user is synced to db
+          router.push(origin ? `/${origin}` : '/dashboard')
+          return false
+        } else {
+          if (data === 'UNAUTHORIZED') {
+            router.push('/sign-in')
+          }
+          return 500
+        }
+        
+    }
   }
+  )
 
-  // Error UI
-  if (error) {
-    return (
-      <div className="w-full mt-24 flex justify-center">
-        <div className="flex flex-col items-center gap-2">
-          <h3 className="font-semibold text-xl text-red-600">An error occurred</h3>
-          <p>Please try again later.</p>
-        </div>
+  return (
+    <div className='w-full mt-24 flex justify-center'>
+      <div className='flex flex-col items-center gap-2'>
+        <Loader2 className='h-8 w-8 animate-spin text-zinc-800' />
+        <h3 className='font-semibold text-xl'>
+          Setting up your account...
+        </h3>
+        <p>You will be redirected automatically.</p>
       </div>
-    );
-  }
+    </div>
+  )
+}
 
-  return null; // Empty render while query processes redirects
-};
-
-export default Page;
+export default Page

@@ -8,7 +8,7 @@ import "simplebar-react/dist/simplebar.min.css";
 
 import { Toaster } from "@/components/ui/toaster";
 import Providers from "@/components/Provider";
-import { AuthProvider } from "./AuthProvider";
+import { Suspense } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,21 +20,19 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <AuthProvider>
-      <html lang="en" className="light">
-        <Providers>
-          <body
-            className={cn(
-              "min-h-screen font-sans antialiased grainy",
-              inter.className
-            )}
-          >
-            <Toaster />
-            <Navbar />
-            {children}
-          </body>
-        </Providers>
-      </html>
-    </AuthProvider>
+    <html lang="en" className="light">
+      <Providers>
+        <body
+          className={cn(
+            "min-h-screen font-sans antialiased grainy",
+            inter.className
+          )}
+        >
+          <Toaster />
+          <Navbar />
+          <Suspense>{children}</Suspense>
+        </body>
+      </Providers>
+    </html>
   );
 }

@@ -4,7 +4,6 @@ import { useState } from 'react'
 import {
   Dialog,
   DialogContent,
-  DialogTitle,
   DialogTrigger,
 } from './ui/dialog'
 import { Button } from './ui/button'
@@ -32,7 +31,7 @@ const UploadDropzone = ({
   const { toast } = useToast()
 
   const { startUpload } = useUploadThing(
-    "freePlanUploader"
+    isSubscribed ? 'proPlanUploader' : 'freePlanUploader'
   )
 
   const { mutate: startPolling } = trpc.getFile.useMutation(
@@ -71,8 +70,6 @@ const UploadDropzone = ({
 
         // handle file uploading
         const res = await startUpload(acceptedFile)
-
-        //const res = await startUploadFirebase(acceptedFile)
 
         if (!res) {
           return toast({
@@ -134,6 +131,11 @@ const UploadDropzone = ({
               {isUploading ? (
                 <div className='w-full mt-4 max-w-xs mx-auto'>
                   <Progress
+                    indicatorColor={
+                      uploadProgress === 100
+                        ? 'bg-green-500'
+                        : ''
+                    }
                     value={uploadProgress}
                     className='h-1 w-full bg-zinc-200'
                   />
@@ -182,7 +184,7 @@ const UploadButton = ({
       </DialogTrigger>
 
       <DialogContent>
-      <DialogTitle><UploadDropzone isSubscribed={false}/></DialogTitle>
+        <UploadDropzone isSubscribed={isSubscribed} />
       </DialogContent>
     </Dialog>
   )

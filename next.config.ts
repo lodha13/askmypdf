@@ -15,10 +15,17 @@ const nextConfig = {
     ]
   },
 
-  experimental: {
-    missingSuspenseWithCSRBailout: false,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'gravatar.com',
+        port: '',
+        pathname: '/avatar/**',
+      },
+    ],
   },
-  
+
   typescript: {
     ignoreBuildErrors: true,
   },

@@ -4,11 +4,10 @@ import { headers } from 'next/headers'
 import type Stripe from 'stripe'
 
 export async function POST(request: Request) {
-  console.log(request)
-  console.log(request.json())
-  console.log(request.body)
   const body = await request.json()
-  const signature = headers().get('Stripe-Signature') ?? ''
+
+  console.log('body ', body)
+  const signature = headers().get('stripe-Signature') ?? ''
 
   let event: Stripe.Event
 
@@ -19,11 +18,12 @@ export async function POST(request: Request) {
       process.env.STRIPE_WEBHOOK_SECRET || ''
     )
   } catch (err) {
+    console.log('request', request)
     return new Response(
       `Webhook Error: ${
         err instanceof Error ? err.message : 'Unknown Error'
       }`,
-      { status: 400 }
+      { status: 500 }
     )
   }
 

@@ -7,8 +7,8 @@ export async function POST(request: Request) {
   const body = await request.text()
 
   console.log('body ', body)
-  const signature = headers().get('stripe-Signature') ?? ''
-
+  const signature = request.headers.get('stripe-Signature') ?? ''
+  console.log('signature ', signature)
   let event: Stripe.Event
 
   try {

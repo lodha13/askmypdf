@@ -19,7 +19,7 @@ export const POST = async (req: NextRequest) => {
 
   const { id: userId } = user
 
-  if (!user || user.id)
+  if (!userId)
     return new Response('Unauthorized', { status: 401 })
 
   const { fileId, message } =

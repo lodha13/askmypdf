@@ -5,9 +5,9 @@ import type Stripe from 'stripe'
 
 export async function POST(request: Request) {
   const body = await request.text()
+  const signature = headers().get('Stripe-Signature') ?? ''
 
   console.log('body ', body)
-  const signature = request.headers.get('stripe-Signature') ?? ''
   console.log('signature ', signature)
   let event: Stripe.Event
 
@@ -18,12 +18,12 @@ export async function POST(request: Request) {
       process.env.STRIPE_WEBHOOK_SECRET || ''
     )
   } catch (err) {
-    console.log('request', request)
+    console.log('err ', err)
     return new Response(
       `Webhook Error: ${
         err instanceof Error ? err.message : 'Unknown Error'
       }`,
-      { status: 500 }
+      { status: 400 }
     )
   }
 
